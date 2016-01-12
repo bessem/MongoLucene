@@ -28,6 +28,7 @@ public class InputFileUtils {
 		List<String> rawLines= null;
 		BufferedReader bfr = null;
 		try{
+                    
 			File f = new File(filePath);
 			InputStreamReader opsr = new InputStreamReader(
 					new FileInputStream(f), inputFileEncoding);
@@ -44,6 +45,7 @@ public class InputFileUtils {
 			bfr.close();
 			System.out.println("Loaded "+rawLines.size()+" lines from input file.");
 		}catch(Exception e){
+                                             e.printStackTrace();
 			try {
 				bfr.close();
 			} catch (IOException iex) {

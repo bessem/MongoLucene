@@ -14,17 +14,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Column implements Serializable{
-    public String id = "ID";
-    public String lname = "ID";
-    public String fname = "ID";
-
+    public String id ;
+    public String lname;
+    public String fname;
+    public String address;
     public Column() {
     }
 
-    public Column(String id, String fname, String lname) {
+    public Column(String id, String fname, String lname, String address) {
         this.id = id;
         this.fname = fname;
         this.lname = lname;
+        this.address = address;
     }
     
 }

@@ -16,11 +16,12 @@ import net.phd.mongolucene.utils.InputFileUtils;
 public class CassandraDAO {
 
     public static final String DB_SRV = "localhost";
-    public static final Integer DB_PORT = 27017;
+    public static final Integer DB_PORT = 9042;
     public static final String DEFAULT_COLLECTION_NAME = "users";
     private final String KEY_ID    = "id";
     private final String KEY_FNAME = "fname";
     private final String KEY_LNAME = "lname";
+    private final String KEY_ADDRESS = "address";
     private final String KEY_SPACE = "column_keyspace";
     private final String TAB_NAME  = "column";
     /**
@@ -48,6 +49,7 @@ public class CassandraDAO {
             List<Column> cols = transformRawDateToCleanCassColumn(inputLines, FLD_SEPARATOR);
             long before = System.currentTimeMillis();
             //the one by one insertion method
+            initCQLSH();
             cols.stream().forEach((col) -> {
                 persistColumn(col);
             });
@@ -73,9 +75,10 @@ public class CassandraDAO {
                     if (fields != null && fields.length >= MIN_FIELDS_COUNT) {
                         regularCount++;
                         Column ctr = new Column();
-                        ctr.id = fields[1];//ctr.setTel(fields[1]);//le num�ro
-                        ctr.fname = fields[2];//setName0(fields[2]);
+                        ctr.id = fields[1];
+                        ctr.fname = fields[2];
                         ctr.lname = fields[3];
+                        ctr.address = fields[4];
                         cleanOnes.add(ctr);
                     } else {
                         System.out.println("Entry [" + line + "] is irregular.");
@@ -91,7 +94,18 @@ public class CassandraDAO {
 
     public void persistColumn(Column col) {
         client.getSession().execute(
-                "INSERT INTO " + KEY_SPACE + "." + TAB_NAME + " (" + KEY_ID + "," + KEY_FNAME + ", " + KEY_LNAME + ") VALUES (?, ?, ?)",
-                col.id, col.fname, col.lname);
+                "INSERT INTO " + KEY_SPACE + "." + TAB_NAME + " (" + KEY_ID + "," + KEY_FNAME + ", " + KEY_LNAME + ", " + KEY_ADDRESS + ") VALUES (?, ?, ?,?)",
+                col.id, col.fname, col.lname,col.address);
+    }
+    public void initCQLSH(){
+        client.getSession().execute("CREATE KEYSPACE IF NOT EXISTS "+KEY_SPACE+" WITH replication " + 
+      "= {'class':'SimpleStrategy', 'replication_factor':3};");
+        client.getSession().execute("DROP TABLE "+KEY_SPACE+"."+TAB_NAME);
+        client.getSession().execute(
+      "CREATE TABLE IF NOT EXISTS "+KEY_SPACE+"."+TAB_NAME+" (" 
+                +KEY_ID+"  text PRIMARY KEY,"
+                +KEY_FNAME+" text," 
+                +KEY_LNAME+" text," 
+                +KEY_ADDRESS+" text);");
     }
 }

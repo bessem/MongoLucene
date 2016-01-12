@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phd.mongolucene.reddis;
+package net.phd.mongolucene.redis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,11 +17,12 @@ import redis.clients.jedis.Jedis;
  *
  * @author aka
  */
-public class ReddisDAO {
+public class RedisDAO {
     public static final String DB_SRV = "localhost";
     private final String KEY_ID    = "id";
     private final String KEY_FNAME = "fname";
     private final String KEY_LNAME = "lname";
+    private final String KEY_ADDRESS = "address";
     public Jedis jedis ; 
     /**
      * Minimum number of fields in a line
@@ -43,6 +44,7 @@ public class ReddisDAO {
                 userProperties.put(KEY_ID, col.id);
                 userProperties.put(KEY_FNAME, col.fname);
                 userProperties.put(KEY_LNAME, col.lname);
+                userProperties.put(KEY_ADDRESS, col.address);
                 jedis.hmset("User With ID ="+KEY_ID, userProperties);
             }
             long justAfter = System.currentTimeMillis();
@@ -68,6 +70,7 @@ public class ReddisDAO {
                         ctr.id = fields[1];
                         ctr.fname = fields[2];
                         ctr.lname = fields[3];
+                        ctr.address = fields[4];
                         cleanOnes.add(ctr);
                     } else {
                         System.out.println("Entry [" + line + "] is irregular.");

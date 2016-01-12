@@ -53,6 +53,7 @@ public class LuceneDAO {
                         long before = System.currentTimeMillis();
                         for(Document doc : documents){
                             iw.addDocument(doc);
+                            iw.commit();
                         }
                         long justAfter = System.currentTimeMillis();
                            System.out.println("Inserted "+documents.size()+" items in "+(justAfter- before)+" ms.");
@@ -71,9 +72,10 @@ public class LuceneDAO {
 					if(fields != null && fields.length>=MIN_FIELDS_COUNT){
 						regularCount++;
 						Document ctr = new Document();
-							ctr.add(new Field("id"   ,fields[1],Field.Store.YES,Field.Index.NOT_ANALYZED));
-                                                        ctr.add(new Field("fname",fields[2],Field.Store.YES,Field.Index.NOT_ANALYZED));//setName0(fields[2]);
-							ctr.add(new Field("lname",fields[3],Field.Store.YES,Field.Index.NOT_ANALYZED));
+						ctr.add(new Field("id"   ,fields[1],Field.Store.YES,Field.Index.NOT_ANALYZED));
+                                                                                                ctr.add(new Field("fname",fields[2],Field.Store.YES,Field.Index.NOT_ANALYZED));//setName0(fields[2]);
+						ctr.add(new Field("lname",fields[3],Field.Store.YES,Field.Index.NOT_ANALYZED));
+                                                                                                ctr.add(new Field("address",fields[4],Field.Store.YES,Field.Index.NOT_ANALYZED));
 							cleanOnes.add(ctr);
 					}else{
 						System.out.println("Entry ["+line+"] is irregular.");

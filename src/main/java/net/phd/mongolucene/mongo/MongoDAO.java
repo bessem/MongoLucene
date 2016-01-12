@@ -45,18 +45,19 @@ public class MongoDAO {
 			List<String> inputLines = InputFileUtils.loadDelimitedFile(inputFileURL); 
 			//transform lines to mongo objects
 			List<DBObject> objects = transformRawDateToCleanMGObjects(inputLines,FLD_SEPARATOR);
-			/* Either the one by one method
+			// Either the one by one method
+                        long before = System.currentTimeMillis();
 			for(DBObject obj: objects){
 				collection.insert(obj);
 			}
-			 */
+			
 			/* Or the API provided bulk insert */
-			long before = System.currentTimeMillis();
-			collection.insert(objects);
+			
+			//collection.insert(objects);
 			long justAfter = System.currentTimeMillis();
 			connection.close();
 			System.out.println("Inserted "+objects.size()+" items in "+(justAfter- before)+" ms.");
-			
+			System.out.println("insertion ratio "+(objects.size()/(justAfter- before))+" item/ms");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -76,6 +77,7 @@ public class MongoDAO {
 							ctr.append("id",fields[1]);//ctr.setTel(fields[1]);//le num�ro
 							ctr.append("fname",fields[2]);//setName0(fields[2]);
 							ctr.append("lname",fields[3]);
+                                                                                                                ctr.append("address",fields[4]);
 							cleanOnes.add(ctr);
 					}else{
 						System.out.println("Entry ["+line+"] is irregular.");
