@@ -37,7 +37,7 @@ public class LuceneDAO {
 	/**
 	 * absolute path to index repository
 	 */
-	private final String INDEX_DIRECTORY= "D:\\fadoua\\idx\\";
+	private final String INDEX_DIRECTORY= "idx";
 	
 	public void indexInputFileAsObjects(String inputFile) throws IOException{
 		//start reading the input file. This step has been done separately to
@@ -45,18 +45,23 @@ public class LuceneDAO {
 		StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_4_10_4);
 		List<String> inputLines = InputFileUtils.loadDelimitedFile(inputFile);
                 List<Document> documents = transformRawDateToCleanLuceneDocuments(inputLines,FLD_SEPARATOR);
+                List<Document> cols = new ArrayList<Document>();
+                cols = documents.subList(0,100000);
                 IndexWriterConfig iwc = new IndexWriterConfig(Version.
                                 LUCENE_4_10_4,analyzer);
                 iwc.setOpenMode(OpenMode.CREATE);
-		try {   
-			IndexWriter iw = new IndexWriter(dir,iwc);
-                        long before = System.currentTimeMillis();
-                        for(Document doc : documents){
+                try {   
+                    int i = 0;
+                            IndexWriter iw = new IndexWriter(dir,iwc);
+                            long before = System.currentTimeMillis();
+                            for(Document doc : cols){
                             iw.addDocument(doc);
                             iw.commit();
+                                System.out.println("Sample"+i+"done");
+                                i++;
                         }
                         long justAfter = System.currentTimeMillis();
-                           System.out.println("Inserted "+documents.size()+" items in "+(justAfter- before)+" ms.");
+                           System.out.println("Inserted "+cols.size()+" items in "+(justAfter- before)+" ms.");
 		} catch (Exception e) {
 			   System.out.println(e.getMessage());
 		}

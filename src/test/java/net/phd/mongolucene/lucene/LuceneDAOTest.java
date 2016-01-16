@@ -48,8 +48,8 @@ public class LuceneDAOTest {
     @Test
     public void testIndexInputFileAsObjects() throws Exception {
         System.out.println("indexInputFileAsObjects");
-      //  LuceneDAO instance = new LuceneDAO();
-      //  instance.indexInputFileAsObjects(getFilePath(getFile()).toString());
+        LuceneDAO instance = new LuceneDAO();
+        instance.indexInputFileAsObjects(getFilePath(getFile()).toString());
     }
     private File getFile() {
         ClassLoader classLoader = getClass().getClassLoader();

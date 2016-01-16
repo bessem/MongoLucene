@@ -45,9 +45,9 @@ public class CassandraDAOTest {
      */
     @Test
     public void testInsertDataSet() {
-        System.out.println("insertDataSet");
-        CassandraDAO instance = new CassandraDAO();
-        instance.insertDataSet(getFilePath(getFile()).toString());  
+        //System.out.println("insertDataSet");
+        //CassandraDAO instance = new CassandraDAO();
+        //instance.insertDataSet(getFilePath(getFile()).toString(),4);  
     }
     private File getFile() {
         ClassLoader classLoader = getClass().getClassLoader();

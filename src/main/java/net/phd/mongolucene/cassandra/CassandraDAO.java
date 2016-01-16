@@ -39,23 +39,42 @@ public class CassandraDAO {
      *
      * @param inputFileURL -absolute path to input file
      */
-    public void insertDataSet(String inputFileURL) {
+    public void insertDataSet(String inputFileURL, int nbr) {
         try {
             //Connection to Cassandra server
             client.connect(DB_SRV, DB_PORT);
+            initCQLSH();
             //start reading the input file. This step has been done separately to
             List<String> inputLines = InputFileUtils.loadDelimitedFile(inputFileURL);
             //transform lines to mongo objects
             List<Column> cols = transformRawDateToCleanCassColumn(inputLines, FLD_SEPARATOR);
-            long before = System.currentTimeMillis();
+           
             //the one by one insertion method
-            initCQLSH();
-            cols.stream().forEach((col) -> {
+            List<Column> cols2 = new   ArrayList<>();
+            switch (nbr) {
+                case 1:
+                    cols2 = cols.subList(0, 100000);
+                break;
+                case 2:
+                    cols2 = cols.subList(0, 300000);
+                break;
+                case 3:
+                    cols2 = cols.subList(0, 500000);
+                break;
+                case 4:
+                    cols2 = cols.subList(0, 800000);
+                break;
+                default:
+                    throw new AssertionError();
+            }
+            
+             long before = System.currentTimeMillis();
+            cols2.stream().forEach((col) -> {
                 persistColumn(col);
             });
             long justAfter = System.currentTimeMillis();
 
-            System.out.println("Inserted " + cols.size() + " items in " + (justAfter - before) + " ms.");
+            System.out.println("Cassandra Inserted " + cols2.size() + " items in " + (justAfter - before) + " ms.");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +119,9 @@ public class CassandraDAO {
     public void initCQLSH(){
         client.getSession().execute("CREATE KEYSPACE IF NOT EXISTS "+KEY_SPACE+" WITH replication " + 
       "= {'class':'SimpleStrategy', 'replication_factor':3};");
-        client.getSession().execute("DROP TABLE "+KEY_SPACE+"."+TAB_NAME);
+       try{ client.getSession().execute("DROP TABLE "+KEY_SPACE+"."+TAB_NAME+";");}
+       catch(Exception e){
+       e.printStackTrace();}
         client.getSession().execute(
       "CREATE TABLE IF NOT EXISTS "+KEY_SPACE+"."+TAB_NAME+" (" 
                 +KEY_ID+"  text PRIMARY KEY,"

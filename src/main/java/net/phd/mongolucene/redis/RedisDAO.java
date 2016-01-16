@@ -36,10 +36,12 @@ public class RedisDAO {
         List<Column> dataSet = new ArrayList<Column>();
         List<String> inputLines = InputFileUtils.loadDelimitedFile(inputFileURL);
         dataSet = transformRawDateToCleanRedisData(inputLines, FLD_SEPARATOR);
+        List<Column> cols = new ArrayList<Column>();
+        cols = dataSet.subList(0,800000);
         try{
         jedis = new Jedis(DB_SRV);
         long before = System.currentTimeMillis();
-            for(Column col : dataSet ){
+            for(Column col : cols ){
                 Map<String, String> userProperties = new HashMap<String, String>();
                 userProperties.put(KEY_ID, col.id);
                 userProperties.put(KEY_FNAME, col.fname);
@@ -49,7 +51,7 @@ public class RedisDAO {
             }
             long justAfter = System.currentTimeMillis();
 
-            System.out.println("Inserted " + dataSet.size() + " items in " + (justAfter - before) + " ms.");
+            System.out.println("Inserted " + cols.size() + " items in " + (justAfter - before) + " ms.");
         }
         catch(Exception e){
             System.out.println("Unable to connect to server due to "+e.getMessage());

@@ -42,12 +42,15 @@ public class MongoDAO {
 			//the test collection is called users
 			DBCollection collection = db.getCollection("users");
 			//start reading the input file. This step has been done separately to
+                                                collection.drop();
+                                                collection = db.getCollection("users");
 			List<String> inputLines = InputFileUtils.loadDelimitedFile(inputFileURL); 
 			//transform lines to mongo objects
 			List<DBObject> objects = transformRawDateToCleanMGObjects(inputLines,FLD_SEPARATOR);
 			// Either the one by one method
+                                                List<DBObject> object2 = objects.subList(0, 800000);
                         long before = System.currentTimeMillis();
-			for(DBObject obj: objects){
+			for(DBObject obj: object2){
 				collection.insert(obj);
 			}
 			
@@ -56,8 +59,8 @@ public class MongoDAO {
 			//collection.insert(objects);
 			long justAfter = System.currentTimeMillis();
 			connection.close();
-			System.out.println("Inserted "+objects.size()+" items in "+(justAfter- before)+" ms.");
-			System.out.println("insertion ratio "+(objects.size()/(justAfter- before))+" item/ms");
+			System.out.println("Inserted "+object2.size()+" items in "+(justAfter- before)+" ms.");
+			//System.out.println("insertion ratio "+(object2.size()/(justAfter- before))+" item/ms");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
